@@ -42,3 +42,17 @@ public class CashierViewController {
     }
 
 }
+
+enum Food {
+    SUBMARINE,BERGER,CHICKEN,FISH;
+
+}
+class Item{
+    Food food;
+    int qty;
+
+    public Item(Food food, int qty) {
+        this.food = food;
+        this.qty = qty;
+    }
+}
