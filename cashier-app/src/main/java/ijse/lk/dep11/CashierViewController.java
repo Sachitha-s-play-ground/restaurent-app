@@ -8,23 +8,26 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
 
 public class CashierViewController {
+
+
 
     @FXML
     private Button btnOrder;
 
     @FXML
-    private Spinner<?> spnBurger;
+    private Spinner<Integer> spnBurger;
 
     @FXML
-    private Spinner<?> spnChicken;
+    private Spinner<Integer> spnChicken;
 
     @FXML
-    private Spinner<?> spnFish;
+    private Spinner<Integer> spnFish;
 
     @FXML
-    private Spinner<?> spnSubmarin;
+    private Spinner<Integer> spnSubmarin;
 
     @FXML
     private TableView<Order> tblCashier;
@@ -43,10 +46,25 @@ public class CashierViewController {
         tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("name"));
         tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("itemlist"));
         tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        SpinnerValueFactory<Integer> valueFactory1=new SpinnerValueFactory.IntegerSpinnerValueFactory(1,100,1);
+        spnBurger.setValueFactory(valueFactory1);
+
+        SpinnerValueFactory<Integer> valueFactory2=new SpinnerValueFactory.IntegerSpinnerValueFactory(1,100,1);
+        spnChicken.setValueFactory(valueFactory2);
+
+        SpinnerValueFactory<Integer> valueFactory3=new SpinnerValueFactory.IntegerSpinnerValueFactory(1,100,1);
+        spnFish.setValueFactory(valueFactory3);
+
+        SpinnerValueFactory<Integer> valueFactory4=new SpinnerValueFactory.IntegerSpinnerValueFactory(1,100,1);
+        spnSubmarin.setValueFactory(valueFactory4);
+
     }
     @FXML
     void btnOrder(ActionEvent event) {
 
     }
+
+
 
 }
