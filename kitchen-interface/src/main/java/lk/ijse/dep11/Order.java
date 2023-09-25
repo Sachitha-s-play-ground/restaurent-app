@@ -1,6 +1,5 @@
-package ijse.lk.dep11.tm;
+package lk.ijse.dep11;
 
-import ijse.lk.dep11.Item;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
