@@ -1,11 +1,19 @@
 package ijse.lk.dep11;
 
 import ijse.lk.dep11.tm.Order;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.*;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CashierViewController {
 
@@ -38,12 +46,17 @@ public class CashierViewController {
     @FXML
     private TextField txtName;
 
-    public void initialize(){
+    private ArrayList<Order> ordersList = new ArrayList<>();
+
+    public void initialize() throws IOException {
+//        Socket socket = new Socket("local host",5050);
+
+
         tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("name"));
-        tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("itemlist"));
-        tblCashier.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("status"));
+        tblCashier.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("name"));
+        tblCashier.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("itemlist"));
+        tblCashier.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("status"));
 
         SpinnerValueFactory<Integer> valueFactory1=new SpinnerValueFactory.IntegerSpinnerValueFactory(1,100,1);
         spnBurger.setValueFactory(valueFactory1);
@@ -60,17 +73,52 @@ public class CashierViewController {
 
     }
     @FXML
-    void btnOrder(ActionEvent event) {
-    if (!txtName.getText().matches( "^[A-Za-z ]+" )){
-        txtName.requestFocus();
-        txtName.selectAll();
-        return;
-    } else if (!txtContact.getText().matches( "\\d{3}-\\d{7}" )) {
-        new Alert(Alert.AlertType.ERROR,"Invalid Contact");
-        txtContact.requestFocus();
-        txtContact.selectAll();
-        return;
-    }
+    void btnOrder(ActionEvent event) throws IOException {
+        if (!txtName.getText().matches( "^[A-Za-z ]+" )){
+            txtName.requestFocus();
+            txtName.selectAll();
+            return;
+        } else if (!txtContact.getText().matches( "\\d{3}-\\d{7}" )) {
+            new Alert(Alert.AlertType.ERROR,"Invalid Contact");
+            txtContact.requestFocus();
+            txtContact.selectAll();
+            return;
+        }
+        List<Order> orderList = tblCashier.getItems();
+        Order order = new Order();
+        if(orderList.isEmpty()){
+            order.setId("1");
+        } else {
+            order.setId(String.format("%s",(Integer.parseInt(orderList.get(orderList.size()-1).getId()))+1));
+        }
+        order.setName(txtName.getText());
+        order.setContact(txtContact.getText());
+        ArrayList<Item> items = new ArrayList<>();
+
+        if(spnSubmarin.getValue()!=null){
+            items.add(new Item(Food.SUBMARINE,spnSubmarin.getValue()));
+        }
+        if(spnChicken.getValue()!=null){
+            items.add(new Item(Food.CHICKEN,spnChicken.getValue()));
+        }
+        if(spnFish.getValue()!=null){
+            items.add(new Item(Food.FISH,spnFish.getValue()));
+        }
+        if(spnBurger.getValue()!=null){
+            items.add(new Item(Food.BERGER,spnBurger.getValue()));
+        }
+        order.setItemlist(items);
+
+        order.setStatus("pending");
+
+        orderList.add(order);
+
+        Socket socket = new Socket("localhost",5050);
+        OutputStream os = socket.getOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(order);
+
 
     }
 
@@ -81,13 +129,4 @@ public class CashierViewController {
 enum Food {
     SUBMARINE,BERGER,CHICKEN,FISH;
 
-}
-class Item{
-    Food food;
-    int qty;
-
-    public Item(Food food, int qty) {
-        this.food = food;
-        this.qty = qty;
-    }
 }
